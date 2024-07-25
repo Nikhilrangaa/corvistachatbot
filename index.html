@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Converting Corvista Score to Post-Test Probability Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .header {
+            background-color: #004b91;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #004b91;
+            margin-top: 20px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #004b91;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #003a70;
+        }
+        .result, .guidance {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e7f3fe;
+            border-left: 4px solid #004b91;
+            display: inline-block;
+            width: calc(100% - 24px);
+        }
+        .result span, .guidance span {
+            font-weight: bold;
+        }
+        .bold-text {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        Converting Corvista Score to Post-Test Probability Calculator
+    </div>
+    <div class="container">
+        <h2>Step 1: Pre-Test Probability</h2>
+        <label for="age">Age</label>
+        <select id="age">
+            <option value="30-39">30-39</option>
+            <option value="40-49">40-49</option>
+            <option value="50-59">50-59</option>
+            <option value="60-69">60-69</option>
+            <option value="70-79">70-79</option>
+            <option value=">80">>80</option>
+        </select>
+
+        <label for="gender">Birth Gender</label>
+        <select id="gender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select>
+
+        <label for="symptoms">Symptoms</label>
+        <select id="symptoms">
+            <option value="Chest Pain">Chest Pain</option>
+            <option value="Dyspnea">Dyspnea</option>
+        </select>
+
+        <button onclick="calculatePreProbability()">Calculate Pre-Test Probability</button>
+        <div id="result" class="result"><span id="resultValue" class="bold-text"></span></div>
+
+        <h2>Or Enter Your Own Pre-Test Probability</h2>
+        <label for="customPreProbability">Pre-Test Probability (%)</label>
+        <input type="number" id="customPreProbability" placeholder="Enter Pre-Test Probability">
+
+        <h2>Step 2: Post-Test Probability</h2>
+        <label for="cadScore">CAD Test Score</label>
+        <input type="number" id="cadScore" placeholder="Enter CAD test score">
+
+        <button onclick="calculatePostProbability()">Calculate Post-Test Probability</button>
+        <div id="postResult" class="result"><span id="postResultValue" class="bold-text"></span></div>
+
+        <div id="guidance" class="guidance"><span id="guidanceValue"></span></div>
+    </div>
+
+    <script>
+        const preTestProbabilityTable = {
+            'male': {
+                '30-39': {'Chest Pain': 4, 'Dyspnea': 0},
+                '40-49': {'Chest Pain': 22, 'Dyspnea': 12},
+                '50-59': {'Chest Pain': 32, 'Dyspnea': 20},
+                '60-69': {'Chest Pain': 44, 'Dyspnea': 27},
+                '70-79': {'Chest Pain': 52, 'Dyspnea': 32},
+                '>80': {'Chest Pain': 52, 'Dyspnea': 32}
+            },
+            'female': {
+                '30-39': {'Chest Pain': 5, 'Dyspnea': 3},
+                '40-49': {'Chest Pain': 10, 'Dyspnea': 3},
+                '50-59': {'Chest Pain': 13, 'Dyspnea': 9},
+                '60-69': {'Chest Pain': 16, 'Dyspnea': 14},
+                '70-79': {'Chest Pain': 27, 'Dyspnea': 12},
+                '>80': {'Chest Pain': 27, 'Dyspnea': 12}
+            }
+        };
+
+        function calculatePreProbability() {
+            const age = document.getElementById('age').value;
+            const gender = document.getElementById('gender').value;
+            const symptoms = document.getElementById('symptoms').value;
+
+            const preProbability = preTestProbabilityTable[gender][age][symptoms];
+
+            document.getElementById('resultValue').innerHTML = `Pre-Test Probability: <span class="bold-text">${preProbability}%</span>`;
+        }
+
+        const likelihoodRatios = {
+            'negative': [
+                {range: [-Infinity, -0.12], lr: 0.129},
+                {range: [-0.11, -0.07], lr: 0.220},
+                {range: [-0.06, 0], lr: 0.340}
+            ],
+            'positive': [
+                {range: [0.00, 0.10], lr: 1.446},
+                {range: [0.11, 0.20], lr: 1.913},
+                {range: [0.21, Infinity], lr: 2.888}
+            ]
+        };
+
+        function calculatePostProbability() {
+            let preProbability = parseFloat(document.getElementById('customPreProbability').value);
+            if (isNaN(preProbability)) {
+                const preProbabilityText = document.getElementById('result').innerText;
+                preProbability = parseFloat(preProbabilityText.split(': ')[1].replace('%', ''));
+            }
+            const cadScore = parseFloat(document.getElementById('cadScore').value);
+
+            if (isNaN(preProbability) || isNaN(cadScore)) {
+                alert('Please calculate pre-test probability or enter a valid pre-test probability and CAD test score');
+                return;
+            }
+
+            let lr;
+            if (cadScore < 0) {
+                for (let i = 0; i < likelihoodRatios['negative'].length; i++) {
+                    if (cadScore >= likelihoodRatios['negative'][i].range[0] && cadScore <= likelihoodRatios['negative'][i].range[1]) {
+                        lr = likelihoodRatios['negative'][i].lr;
+                        break;
+                    }
+                }
+            } else {
+                for (let i = 0; i < likelihoodRatios['positive'].length; i++) {
+                    if (cadScore >= likelihoodRatios['positive'][i].range[0] && cadScore <= likelihoodRatios['positive'][i].range[1]) {
+                        lr = likelihoodRatios['positive'][i].lr;
+                        break;
+                    }
+                }
+            }
+
+            const preOdds = preProbability / (100 - preProbability);
+            const postOdds = preOdds * lr;
+            const postProbability = postOdds / (1 + postOdds) * 100;
+
+            document.getElementById('postResultValue').innerHTML = `Post-Test Probability: <span class="bold-text">${postProbability.toFixed(2)}%</span>`;
+
+            provideGuidance(postProbability);
+        }
+
+        function provideGuidance(postProbability) {
+            let guidanceText = "";
+
+            if (postProbability > 85) {
+                guidanceText = "High probability of CAD. Invasive coronary angiography is recommended.";
+            } else if (postProbability < 15) {
+                guidanceText = "Low probability of CAD. Further testing is usually not recommended. The CorVista System, with its high negative predictive value (NPV) of 99%, can reliably rule out significant CAD in these cases.";
+            } else {
+                guidanceText = "Intermediate probability of CAD. Additional non-invasive testing such as stress echocardiography, stress SPECT, stress PET, stress CMR, or CCTA is recommended.";
+            }
+
+            document.getElementById('guidanceValue').innerHTML = `Guidance: <span class="bold-text">${guidanceText}</span>`;
+        }
+    </script>
+</body>
+</html>
