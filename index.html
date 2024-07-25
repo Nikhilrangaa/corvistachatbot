@@ -159,14 +159,12 @@
             }
 
             let riskFactorIndex;
-            if (riskFactorCount === 0 || riskFactorCount === 1) {
+            if (riskFactorCount <= 1) {
                 riskFactorIndex = 0;
             } else if (riskFactorCount >= 2 && riskFactorCount <= 3) {
+                riskFactorIndex = 1;
+            } else if (riskFactorCount >= 4) {
                 riskFactorIndex = 2;
-            } else if (riskFactorCount >= 4 && riskFactorCount <= 5) {
-                riskFactorIndex = 3;
-            } else {
-                riskFactorIndex = 3;
             }
 
             const preProbabilityArray = preTestProbabilityTable[gender][age][symptoms];
