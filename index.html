@@ -76,14 +76,6 @@
         .bold-text {
             font-weight: bold;
         }
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            margin: 5px 0;
-        }
-        .checkbox-container input {
-            margin-right: 10px;
-        }
     </style>
 </head>
 <body>
@@ -117,26 +109,11 @@
 
         <label for="riskFactors">Risk Factors</label>
         <div id="riskFactors">
-            <div class="checkbox-container">
-                <input type="checkbox" id="familyHistory" name="riskFactors" value="familyHistory">
-                <label for="familyHistory">Family history</label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="smoking" name="riskFactors" value="smoking">
-                <label for="smoking">Smoking</label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="hyperlipidemia" name="riskFactors" value="hyperlipidemia">
-                <label for="hyperlipidemia">Hyperlipidemia</label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="hypertension" name="riskFactors" value="hypertension">
-                <label for="hypertension">Hypertension</label>
-            </div>
-            <div class="checkbox-container">
-                <input type="checkbox" id="diabetes" name="riskFactors" value="diabetes">
-                <label for="diabetes">Diabetes</label>
-            </div>
+            <input type="checkbox" id="familyHistory" name="riskFactors" value="familyHistory"> Family history<br>
+            <input type="checkbox" id="smoking" name="riskFactors" value="smoking"> Smoking<br>
+            <input type="checkbox" id="hyperlipidemia" name="riskFactors" value="hyperlipidemia"> Hyperlipidemia<br>
+            <input type="checkbox" id="hypertension" name="riskFactors" value="hypertension"> Hypertension<br>
+            <input type="checkbox" id="diabetes" name="riskFactors" value="diabetes"> Diabetes<br>
         </div>
 
         <button onclick="calculatePreProbability()">Calculate Pre-Test Probability</button>
@@ -249,4 +226,3 @@
     </script>
 </body>
 </html>
-
