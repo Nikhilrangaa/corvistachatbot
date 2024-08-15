@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,9 +17,11 @@
             align-items: center;
             height: 100vh;
         }
+
         .chat-container {
             background-color: #fff;
-            width: 400px;
+            width: 100%;
+            max-width: 400px;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             display: flex;
@@ -26,6 +29,7 @@
             overflow: hidden;
             border: 1px solid #ddd;
         }
+
         .chat-header {
             background-color: #007bff;
             color: #fff;
@@ -35,6 +39,7 @@
             font-weight: bold;
             border-bottom: 2px solid #0056b3;
         }
+
         .chat-window {
             flex-grow: 1;
             padding: 20px;
@@ -43,15 +48,18 @@
             display: flex;
             flex-direction: column;
         }
+
         .chat-message {
             margin-bottom: 15px;
             display: flex;
             flex-direction: column;
         }
+
         .chat-message .sender {
             font-weight: bold;
             margin-bottom: 5px;
         }
+
         .chat-message .message {
             background-color: #007bff;
             color: #fff;
@@ -62,15 +70,18 @@
             word-wrap: break-word;
             line-height: 1.5;
         }
+
         .chat-message.bot .message {
             background-color: #f1f1f1;
             color: #333;
             align-self: flex-end;
         }
+
         .loading-dots {
             display: inline-block;
             margin-left: 5px;
         }
+
         .loading-dots span {
             display: inline-block;
             width: 8px;
@@ -81,29 +92,37 @@
             opacity: 0;
             animation: blink 1.4s infinite both;
         }
+
         .loading-dots span:nth-child(1) {
             animation-delay: 0.2s;
         }
+
         .loading-dots span:nth-child(2) {
             animation-delay: 0.4s;
         }
+
         .loading-dots span:nth-child(3) {
             animation-delay: 0.6s;
         }
+
         @keyframes blink {
-            0%, 100% {
+            0%,
+            100% {
                 opacity: 0;
             }
+
             50% {
                 opacity: 1;
             }
         }
+
         .chat-input-container {
             padding: 15px;
             border-top: 1px solid #ddd;
             background-color: #fff;
             display: flex;
         }
+
         .chat-input-container input {
             flex-grow: 1;
             padding: 10px;
@@ -112,6 +131,7 @@
             outline: none;
             font-size: 16px;
         }
+
         .chat-input-container button {
             background-color: #007bff;
             color: #fff;
@@ -123,14 +143,16 @@
             transition: background-color 0.3s;
             font-size: 16px;
         }
+
         .chat-input-container button:hover {
             background-color: #0056b3;
         }
     </style>
 </head>
+
 <body>
     <div class="chat-container">
-        <div class="chat-header">
+        <div id="chatHeader" class="chat-header">
             Corvista Chatbot
         </div>
         <div id="chatWindow" class="chat-window">
@@ -143,12 +165,11 @@
     </div>
 
     <script>
-        // Configuration object for customizable settings
         const chatbotConfig = {
-            apiEndpoint: 'https://c9guv12o60.execute-api.us-east-1.amazonaws.com/test', // Your API endpoint
-            botName: 'Corvista Chatbot', // Name of the bot
-            loadingMessage: 'Please wait...', // Message displayed while loading
-            initialGreeting: 'Hello! I\'m Corvista Chatbot. How can I assist you today?' // Initial greeting message
+            apiEndpoint: 'https://c9guv12o60.execute-api.us-east-1.amazonaws.com/test',
+            botName: 'Corvista Chatbot',
+            loadingMessage: 'Please wait...',
+            initialGreeting: 'Hello! I\'m Corvista Chatbot. How can I assist you today?'
         };
 
         document.getElementById('chatHeader').textContent = chatbotConfig.botName;
@@ -159,8 +180,7 @@
             }
         });
 
-        // Show the initial greeting when the page loads
-        window.onload = function() {
+        window.onload = function () {
             appendMessage(chatbotConfig.botName, chatbotConfig.initialGreeting);
         };
 
@@ -168,20 +188,16 @@
             const userInput = document.getElementById('userInput').value.trim();
             if (userInput === '') return;
 
-            // Display user's message
             appendMessage('You', userInput);
 
-            // Clear the input
             document.getElementById('userInput').value = '';
 
-            // Show loading dots while waiting for the response
             const loadingMessage = appendMessage(chatbotConfig.botName, chatbotConfig.loadingMessage);
             const loadingDots = document.createElement('div');
             loadingDots.className = 'loading-dots';
             loadingDots.innerHTML = '<span></span><span></span><span></span>';
             loadingMessage.querySelector('.message').appendChild(loadingDots);
 
-            // Send the message to the API
             fetch(chatbotConfig.apiEndpoint, {
                 method: 'POST',
                 headers: {
@@ -189,17 +205,16 @@
                 },
                 body: JSON.stringify({ user_input: userInput })
             })
-            .then(response => response.json())
-            .then(data => {
-                // Remove loading dots and display bot's response
-                loadingMessage.querySelector('.message').removeChild(loadingDots);
-                loadingMessage.querySelector('.message').textContent = data.response;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                loadingMessage.querySelector('.message').removeChild(loadingDots);
-                loadingMessage.querySelector('.message').textContent = 'Sorry, something went wrong. Please try again.';
-            });
+                .then(response => response.json())
+                .then(data => {
+                    loadingMessage.querySelector('.message').removeChild(loadingDots);
+                    loadingMessage.querySelector('.message').textContent = data.response;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    loadingMessage.querySelector('.message').removeChild(loadingDots);
+                    loadingMessage.querySelector('.message').textContent = 'Sorry, something went wrong. Please try again.';
+                });
         }
 
         function appendMessage(sender, message) {
@@ -227,4 +242,6 @@
         }
     </script>
 </body>
+
 </html>
+
