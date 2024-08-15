@@ -169,7 +169,15 @@
             apiEndpoint: 'https://c9guv12o60.execute-api.us-east-1.amazonaws.com/test',
             botName: 'Corvista Chatbot',
             loadingMessage: 'Please wait...',
-            initialGreeting: 'Hello! I\'m Corvista Chatbot. How can I assist you today?'
+            initialGreeting: 'Hello! I\'m Corvista Chatbot. How can I assist you today?',
+            casualResponses: {
+                "good morning": "Good morning! How can I help you today?",
+                "good afternoon": "Good afternoon! How can I assist you?",
+                "good evening": "Good evening! What can I do for you?",
+                "hello": "Hello! How can I assist you today?",
+                "hi": "Hi there! How can I help you?",
+                "hey": "Hey! How can I assist you today?"
+            }
         };
 
         document.getElementById('chatHeader').textContent = chatbotConfig.botName;
@@ -185,12 +193,14 @@
         };
 
         function sendMessage() {
-            const userInput = document.getElementById('userInput').value.trim();
+            const userInput = document.getElementById('userInput').value.trim().toLowerCase();
             if (userInput === '') return;
 
             appendMessage('You', userInput);
 
             document.getElementById('userInput').value = '';
+
+            if (handleCasualConversation(userInput)) return;
 
             const loadingMessage = appendMessage(chatbotConfig.botName, chatbotConfig.loadingMessage);
             const loadingDots = document.createElement('div');
@@ -215,6 +225,15 @@
                     loadingMessage.querySelector('.message').removeChild(loadingDots);
                     loadingMessage.querySelector('.message').textContent = 'Sorry, something went wrong. Please try again.';
                 });
+        }
+
+        function handleCasualConversation(userInput) {
+            const response = chatbotConfig.casualResponses[userInput];
+            if (response) {
+                appendMessage(chatbotConfig.botName, response);
+                return true;
+            }
+            return false;
         }
 
         function appendMessage(sender, message) {
@@ -244,4 +263,3 @@
 </body>
 
 </html>
-
