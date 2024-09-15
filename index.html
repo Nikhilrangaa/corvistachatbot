@@ -1,246 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Corvista Chatbot</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f5f7;
-            color: #333;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .chat-container {
-            background-color: #fff;
-            width: 100%;
-            max-width: 400px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            border: 1px solid #ddd;
-        }
-
-        .chat-header {
-            background-color: #007bff;
-            color: #fff;
-            padding: 20px;
-            text-align: center;
-            font-size: 1.75em;
-            font-weight: bold;
-            border-bottom: 2px solid #0056b3;
-        }
-
-        .chat-window {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
-            background-color: #f9f9f9;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .chat-message {
-            margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .chat-message .sender {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .chat-message .message {
-            background-color: #007bff;
-            color: #fff;
-            padding: 10px;
-            border-radius: 20px;
-            max-width: 75%;
-            align-self: flex-start;
-            word-wrap: break-word;
-            line-height: 1.5;
-        }
-
-        .chat-message.bot .message {
-            background-color: #f1f1f1;
-            color: #333;
-            align-self: flex-end;
-        }
-
-        .loading-dots {
-            display: inline-block;
-            margin-left: 5px;
-        }
-
-        .loading-dots span {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            margin-right: 3px;
-            background-color: #007bff;
-            border-radius: 50%;
-            opacity: 0;
-            animation: blink 1.4s infinite both;
-        }
-
-        .loading-dots span:nth-child(1) {
-            animation-delay: 0.2s;
-        }
-
-        .loading-dots span:nth-child(2) {
-            animation-delay: 0.4s;
-        }
-
-        .loading-dots span:nth-child(3) {
-            animation-delay: 0.6s;
-        }
-
-        @keyframes blink {
-            0%,
-            100% {
-                opacity: 0;
-            }
-
-            50% {
-                opacity: 1;
-            }
-        }
-
-        .chat-input-container {
-            padding: 15px;
-            border-top: 1px solid #ddd;
-            background-color: #fff;
-            display: flex;
-        }
-
-        .chat-input-container input {
-            flex-grow: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            outline: none;
-            font-size: 16px;
-        }
-
-        .chat-input-container button {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            margin-left: 10px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-size: 16px;
-        }
-
-        .chat-input-container button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Predictive Analytics and Smart Irrigation</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 50px; }
+    h1 { color: #2c3e50; }
+    label { display: block; margin-top: 15px; }
+    input, select { padding: 5px; width: 200px; }
+    button { margin-top: 20px; padding: 10px 20px; }
+    #result { margin-top: 30px; font-size: 1.2em; color: #27ae60; }
+  </style>
 </head>
-
 <body>
-    <div class="chat-container">
-        <div id="chatHeader" class="chat-header">
-            Corvista Chatbot
-        </div>
-        <div id="chatWindow" class="chat-window">
-            <!-- Chat messages will appear here -->
-        </div>
-        <div class="chat-input-container">
-            <input type="text" id="userInput" placeholder="Type your message here..." />
-            <button id="sendButton">Send</button>
-        </div>
-    </div>
 
-    <script>
-        const chatbotConfig = {
-            apiEndpoint: 'https://c9guv12o60.execute-api.us-east-1.amazonaws.com/test', // Replace with your actual API endpoint
-            botName: 'Corvista Chatbot',
-            loadingMessage: 'Please wait...',
-            initialGreeting: 'Hello! I\'m Corvista Chatbot. How can I assist you today?'
-        };
+  <h1>Smart Irrigation Decision Tool</h1>
 
-        document.getElementById('chatHeader').textContent = chatbotConfig.botName;
-        document.getElementById('sendButton').addEventListener('click', sendMessage);
-        document.getElementById('userInput').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
+  <label for="soilMoisture">Soil Moisture (%):</label>
+  <input type="number" id="soilMoisture" min="0" max="100" value="50">
 
-        window.onload = function () {
-            appendMessage(chatbotConfig.botName, chatbotConfig.initialGreeting);
-        };
+  <label for="weatherForecast">Weather Forecast:</label>
+  <select id="weatherForecast">
+    <option value="sunny">Sunny</option>
+    <option value="cloudy">Cloudy</option>
+    <option value="rain">Rain Expected</option>
+  </select>
 
-        function sendMessage() {
-            const userInput = document.getElementById('userInput').value.trim().toLowerCase();
-            if (userInput === '') return;
+  <label for="cropType">Crop Type:</label>
+  <select id="cropType">
+    <option value="wheat">Wheat</option>
+    <option value="corn">Corn</option>
+    <option value="soybean">Soybean</option>
+  </select>
 
-            appendMessage('You', userInput);
+  <button onclick="makeDecision()">Determine Irrigation Need</button>
 
-            document.getElementById('userInput').value = '';
+  <div id="result"></div>
 
-            const loadingMessage = appendMessage(chatbotConfig.botName, chatbotConfig.loadingMessage);
-            const loadingDots = document.createElement('div');
-            loadingDots.className = 'loading-dots';
-            loadingDots.innerHTML = '<span></span><span></span><span></span>';
-            loadingMessage.querySelector('.message').appendChild(loadingDots);
+  <script>
+    function makeDecision() {
+      const soilMoisture = parseFloat(document.getElementById('soilMoisture').value);
+      const weatherForecast = document.getElementById('weatherForecast').value;
+      const cropType = document.getElementById('cropType').value;
 
-            fetch(chatbotConfig.apiEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ user_input: userInput })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    loadingMessage.querySelector('.message').removeChild(loadingDots);
-                    loadingMessage.querySelector('.message').textContent = data.response;
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    loadingMessage.querySelector('.message').removeChild(loadingDots);
-                    loadingMessage.querySelector('.message').textContent = 'Sorry, something went wrong. Please try again.';
-                });
-        }
+      let moistureThreshold;
+      switch(cropType) {
+        case 'wheat':
+          moistureThreshold = 40;
+          break;
+        case 'corn':
+          moistureThreshold = 50;
+          break;
+        case 'soybean':
+          moistureThreshold = 45;
+          break;
+        default:
+          moistureThreshold = 50;
+      }
 
-        function appendMessage(sender, message) {
-            const chatWindow = document.getElementById('chatWindow');
+      let decision = '';
+      if (soilMoisture < moistureThreshold && weatherForecast !== 'rain') {
+        decision = 'Irrigation is recommended.';
+      } else {
+        decision = 'Irrigation is not necessary at this time.';
+      }
 
-            const messageContainer = document.createElement('div');
-            messageContainer.classList.add('chat-message');
-            if (sender === chatbotConfig.botName) messageContainer.classList.add('bot');
+      document.getElementById('result').innerText = decision;
+    }
+  </script>
 
-            const senderElem = document.createElement('div');
-            senderElem.classList.add('sender');
-            senderElem.textContent = sender;
-
-            const messageElem = document.createElement('div');
-            messageElem.classList.add('message');
-            messageElem.textContent = message;
-
-            messageContainer.appendChild(senderElem);
-            messageContainer.appendChild(messageElem);
-
-            chatWindow.appendChild(messageContainer);
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-
-            return messageContainer;
-        }
-    </script>
 </body>
-
 </html>
+
